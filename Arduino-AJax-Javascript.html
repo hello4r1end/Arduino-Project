@@ -1,0 +1,200 @@
+
+
+<html>
+   <head>
+       <title>Arduino Ajax LED Button Control</title>
+		
+        <script>
+		strLED1 = "";
+		strLED2 = "";
+		var LED2_state = 0;
+		function GetArduinoIO()
+		{
+			nocache = "&nocache=" + Math.random() * 1000000;
+			var request = new XMLHttpRequest();
+			request.onreadystatechange = function()
+			{
+				if (this.readyState == 4) {
+					if (this.status == 200) {
+						if (this.responseXML != null) {
+							// XML file received - contains analog values, switch values and LED states
+							var count;
+							// LED 1
+							if (this.responseXML.getElementsByTagName('LED')[0].childNodes[0].nodeValue === "checked") {
+								document.LED_form.LED1.checked = true;
+								
+							}
+							else {
+								document.LED_form.LED1.checked = false;
+							}
+							// LED 2
+							if (this.responseXML.getElementsByTagName('LED')[1].childNodes[0].nodeValue === "on") {
+								document.getElementById("LED2").innerHTML = "LED 2 is ON (POTISMA)";
+								LED2_state = 1;
+							}
+							else {
+								document.getElementById("LED2").innerHTML = "LED 2 is OFF (POTISMA)";
+								LED2_state = 0;
+							}
+							
+							// LM 335-dht11
+							document.getElementById("DHT11-LM335").innerHTML = this.responseXML.getElementsByTagName('DHT11-LM335')[0].childNodes[0].nodeValue;
+							
+							
+         
+		                     
+		
+						}
+					}
+				}
+			}
+			// send HTTP GET request with LEDs to switch on/off if any
+			request.open("GET", "ajax_inputs" + strLED1 + strLED2 + nocache, true);
+			request.send(null);
+			setTimeout('GetArduinoIO()', 1000);
+			strLED1 = "";
+			strLED2 = "";
+		}
+		// service LEDs when checkbox checked/unchecked
+		function GetCheck()
+		{
+			if (LED_form.LED1.checked) {
+				strLED1 = "&LED1=1"; 
+			}
+			else {
+				strLED1 = "&LED1=0";
+				
+			}
+		}
+		function GetButton1()
+		{
+			if (LED2_state === 1) {
+				LED2_state = 0;
+				strLED2 = "&LED2=0";
+			}
+			else {
+				LED2_state = 1;
+				strLED2 = "&LED2=1";
+			}
+		}
+	</script>
+	<style>
+		.IO_box {
+			float: left;
+			margin: 0 20px 20px 0;
+			border: 1px solid red;
+			padding: 0 5px 0 5px;
+			width: 120px;
+		}
+		h1 {
+			font-size: 120%;
+			color:#15E163;
+			margin: 0 0 10px 0;
+		}
+		h2 {
+			font-size: 85%;
+			color: #06B4FE;
+			color: #15E163;
+			margin: 5px 0 5px 0;
+		}
+		
+		
+		.small_text {
+			font-size: 70%;
+			color: #737373;
+		}
+		
+		#panel, #flip {
+			padding: 5px;
+			text-align: center;
+			background-color: #e5eecc;
+			border: solid 1px #c3c3c3;
+		}
+
+		#panel {
+			padding: 50px;
+			display: none;
+		}
+		
+		#panel1, #flip1 {
+			padding: 5px;
+			text-align: center;
+			background-color: #e5eecc;
+			border: solid 1px #c3c3c3;
+		}
+
+		#panel1 {
+			padding: 50px;
+			display: none;
+		}
+		
+	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	
+	<script> 
+	$(document).ready(function(){
+		$("#flip").click(function(){
+			$("#panel").slideToggle("slow");
+		});
+	});
+	</script>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	
+	<script> 
+	$(document).ready(function(){
+		$("#flip1").click(function(){
+			$("#panel1").slideToggle("slow");
+		});
+	});
+	</script>
+
+    </head>
+     <body  onload="GetArduinoIO()"  background="android-19.jpg">
+        
+		<h1> <p align="center" ><font size="4">SMART GREEN HOUSE </font></p></h1>
+		<div class="IO_box">
+			<h2>LED Using Checkbox</h2>
+			<form id="check_LEDs" name="LED_form">
+		<p id="myImage"></p>	
+	<input type="checkbox" name="LED1" value="0" onclick="GetCheck()" /><font color="#06B4FE">LED1 VEDILATER</font><br /><br />
+			
+			</form>
+		</div>
+ <div style="position: relative">
+                <p style="position: fixed; bottom: 0; width:98%; text-align: right"> 
+                <img id="myImage" src="http://madsenworld.dk/anigif/light/red_bl.gif" style="width:50px">
+                </p>
+            </div>
+		<div class="IO_box">
+			<h2>LED Using Button</h2>
+			<button type="button" id="LED2" onclick="GetButton1()">LED 2 is OFF POTISMA</button><br /><br />
+		</div>
+		 <!-- weather widget start -->
+		 <p align=right>
+		 <a target="_blank" href="http://ibooked.gr/weather/argos-56441">
+		 <img src="https://w.bookcdn.com/weather/picture/31_56441_1_19_c55a99_250_bf428c_ffffff_ffffff_1_2071c9_ffffff_0_6.png?scode=124&domid=w209&anc_id=43788" alt="booked.net"/>
+		 </a>
+		 </p>
+		 <!-- weather widget end -->
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+
+		<div id="flip1">Click to slide the panel down or up -------> FOR  HUMIDITY-TEMPERATURE SENSORS </div>
+		<div id="panel1">
+			<div id="DHT11-LM335">
+			
+			</div> 
+		</div>
+	<p align=center>	
+<a href="https://www.youtube.com/embed/NoSIMefv8_A"> <font color="red"><img src="lol.png" style="width:300px;height:200px;"></font> </a>
+<p> <font color="red"> </font> </p>
+
+		</body>
+</html>
